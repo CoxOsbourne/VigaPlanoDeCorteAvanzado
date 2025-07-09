@@ -94,7 +94,7 @@ namespace VigaPlanoDeCorteAvanzado
             //PointList.Add(new InputDefinition(PickedPoints));
 
             //return PointList;
-            return new List<InputDefinition>(); // No se seleccionan puntos
+            return new List<InputDefinition>(); // No se seleccionan puntos. No points selected
         }
 
         public override bool Run(List<InputDefinition> Input)
@@ -169,7 +169,7 @@ namespace VigaPlanoDeCorteAvanzado
         }
 
         // Write your private methods here.
-        private static ModelObject CrearVigaX(double PositionX, double PositionY, double LengthX)
+        private static ModelObject CrearVigaX(double PositionX, double PositionY, double LengthX) /*viga a lo largo del eje x ; beam throughout x axis*/
         {
             Beam VigaX = new Beam();
             VigaX.Name = "VIGA";
@@ -179,7 +179,7 @@ namespace VigaPlanoDeCorteAvanzado
             VigaX.StartPoint.X = PositionX;
             VigaX.StartPoint.Y = PositionY;
             VigaX.StartPoint.Z = 0.0;
-            VigaX.EndPoint.X = PositionX + LengthX;
+            VigaX.EndPoint.X = PositionX + LengthX; /*punto final de la viga= punto inicial + largo de la viga; end point = starting point + beam length*/
             VigaX.EndPoint.Y = PositionY;
             VigaX.EndPoint.Z = 0.0;
             VigaX.Position.Rotation = Position.RotationEnum.TOP;
@@ -189,26 +189,26 @@ namespace VigaPlanoDeCorteAvanzado
             {
                 Console.WriteLine("Insertion of beam failed.");
             }
-            if(PositionY==0) 
+            if(PositionY==0) /*creación de planos de corte para la viga que empieza en (0,0,0); cutting planes generation for the beam that starts in (0,0,0)*/
             {
-                CutPlane plane1 = new CutPlane();
+                CutPlane plane1 = new CutPlane(); /*plano de corte extremo inicial; starting point cutting plane*/
                 plane1.Father = VigaX;
                 plane1.Plane = new Plane();
-                plane1.Plane.Origin = new Point(-150, -150);
-                plane1.Plane.AxisX = new Vector(1, 1, 0);
-                plane1.Plane.AxisY = new Vector(0, 0, -1);
+                plane1.Plane.Origin = new Point(-150, -150); /*HEB 300, divides 300/2 y de ahí sale el 150; HEB300, divide 300/2 and there you have 150*/
+                plane1.Plane.AxisX = new Vector(1, 1, 0); /*visto en el entorno de Tekla esto es muy gráfico; if you open Tekla Structures, this is self-explanatory*/
+                plane1.Plane.AxisY = new Vector(0, 0, -1); /*ojo con el signo, porque determina dónde se elimina material; careful with the sign, because it determines where the material will be removed*/
                 plane1.Insert();
 
-                CutPlane plane2 = new CutPlane();
+                CutPlane plane2 = new CutPlane(); /*plano de corte en el extremo final; end point cutting plane*/
                 plane2.Father = VigaX;
                 plane2.Plane = new Plane();
-                plane2.Plane.Origin = new Point(LengthX-150, -150);
+                plane2.Plane.Origin = new Point(LengthX-150, -150); /*Hay que tener en cuenta el ancho del perfil. Accounting for profile width */
                 plane2.Plane.AxisX = new Vector(-1, 1, 0);
                 plane2.Plane.AxisY = new Vector(0, 0, 1);
                 plane2.Insert();
 
             }
-            else
+            else /*creación de planos de corte para la viga que empieza en el extremo opuesto del bastidor (y!=0);  cutting planes generation for the beam that starts in the opposite end of the frame (y!=0)*/
             {
 
                     CutPlane plane1 = new CutPlane();
@@ -234,7 +234,7 @@ namespace VigaPlanoDeCorteAvanzado
             return VigaX;
         }
 
-        private static ModelObject CrearVigaY(double PositionX, double PositionY, double LengthY)
+        private static ModelObject CrearVigaY(double PositionX, double PositionY, double LengthY) /*creación de vigas que van a lo largo del eje y; beam generation throughout y-axis*/
         {
             Beam VigaY = new Beam();
             VigaY.Name = "VIGA";
